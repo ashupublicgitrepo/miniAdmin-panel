@@ -1,11 +1,11 @@
 import React from "react";
-const Form = ({ taskAdder, data, dataSetter, button }) => {
+const Form = ({ taskAdder, data, dataSetter, disable }) => {
    
     return (
       <>
         <form  action="" onSubmit={(e) => taskAdder(e)}>
           <input type="text" value={data} onChange={dataSetter} />
-          <button disabled={button ==="_taskButton"}>add task</button>
+          <button disabled={disable === "_loading"}>{disable === "_loading" ? "...adding" : "add task"}</button>
         </form>
       </>
     );
