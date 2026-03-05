@@ -5,7 +5,7 @@ const Form = ({ taskAdder, data, dataSetter, disable }) => {
       <>
         <form  action="" onSubmit={(e) => taskAdder(e)}>
           <input type="text" value={data} onChange={dataSetter} />
-          <button disabled={disable === "_loading"}>{disable === "_loading" ? "...adding" : "add task"}</button>
+          <button disabled={disable === "loading"}>{disable === "loading" ? "...adding" : "add task"}</button>
         </form>
       </>
     );

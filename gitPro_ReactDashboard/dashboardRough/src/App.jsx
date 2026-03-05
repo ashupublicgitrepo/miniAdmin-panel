@@ -7,10 +7,11 @@ const App = () => {
   const [task, setTask] = useState([]);
   const [data, setData] = useState("");
   const [state, setState] = useState({
-    phase: "_idle",
+    phase: "idle",
     status: null,
     action: null,
-    targetId:null
+    targetId: null,
+    editingId:null,
   });
   
   // function localSyncher() {
@@ -35,66 +36,108 @@ const App = () => {
   function wait() {
     return new Promise(res => setTimeout(res, 100));
   }
-  function stateSetter(newSt) {
+   function stateSetter(newSt) {
     setState(pr => ({ ...pr, ...newSt })); 
   }
  async function taskAdder(e) {
    e.preventDefault();
-   if (state.phase === "_loading") return false;
+   if (state.phase === "loading") return false;
    if (data.length < 1) {
-     stateSetter({ phase: "_idle", status: "_emptyInput", action: null });
+     stateSetter({ phase: "idle", status: "emptyInput", action: null });
      return;
    };
-   stateSetter({ phase: "_loading", action:"_taskButton", status:"_taskAdding" });
-   await wait();
    try {
-     await server();
-     const newTask = {
-       id: Date.now(),
-       title: data,
-       status: "pending"
-     };
-     stateSetter({ phase: "_idle", status: "_uploaded", action: null });
-     await wait();
-     setTask(pr => [...pr, newTask]);
-     setData("");
-     
-   } catch {
-     stateSetter({ phase: "_error", status: "_uploadFailed", action: null });
+     if (state.editingId) {
+      stateSetter({
+        phase: "loading",
+        action: "taskButton",
+        status: "taskEditing",
+      });
+       const editedList = [...task];
+       editedList[state.targetId].title = data;
+       await server();
+       setTask(editedList);
+       stateSetter({
+         phase: "idle",
+         status: "edited",
+         action: null,
+         editingId: null,
+         targetId:null
+       });
+        stateSetter({ phase: "idle", status: "edited", action: null });
+     } else {
+        stateSetter({
+          phase: "loading",
+          action: "taskButton",
+          status: "taskAdding",
+        });
+        await wait();
+        await server();
+        const newTask = {
+          id: Date.now(),
+          title: data,
+          status: "pending",
+        };
+        setTask((pr) => [...pr, newTask]);
+        stateSetter({ phase: "idle", status: "uploaded", action: null });
+         
+      }
+    }catch {
+     stateSetter({ phase: "error", status: "uploadFailed", action: null });
    } 
-
+   finally {
+     setData("");
+     stateSetter({phase:"idle", action:null, targetId:null, editingId:null})
+     await wait();
+   }
   }
   function dataSetter(e) {
     const data = e.target.value;
     setData(data); 
   }
   async function taskDeleter(indexNum, id) {
-    if (state.phase === "_loading") return false;
-    stateSetter({ phase: "_loading", status: "_taskDelete", action: "delete", targetId:id });
+    if (state.phase === "loading") return false;
+    stateSetter({ phase: "loading", status: "taskDelete", action: "delete", targetId:id });
     const taskListNew = [...task];
     try {
       await server();
       taskListNew.splice(indexNum, 1);
-      stateSetter({ phase: "_success", status: "_deleted", action: null, targetId:null });
+      stateSetter({ phase: "success", status: "deleted", action: null, targetId:null });
       await wait();
       setTask(taskListNew);
     } catch {
-      stateSetter({ phase: "_error", status: "_deleteFailed", action: null });
+      stateSetter({ phase: "error", status: "deleteFailed", action: null });
     } finally {
       await wait();
       
-      stateSetter({ phase: "_idle", status: null, action: null, targetId: null });
+      stateSetter({ phase: "idle", status: null, action: null, targetId: null });
     }
   };
-
+  function editorData(id, index) {
+    const taskToEdit = task.find(t => t.id == id);
+    stateSetter({targetId: index, editingId: id, status:"editProgress" });
+    setData(taskToEdit.title);
+  }
+ 
  
  
   return (
     <>
       <Header />
-      <Form data={data} taskAdder={taskAdder} disable={state.phase} dataSetter={dataSetter}  />
-      <UIMsg status ={state.status}   />
-      <UIBox task={task} taskDeleter={taskDeleter} targetId={state.targetId} phase={state.phase} />
+      <Form
+        data={data}
+        taskAdder={taskAdder}
+        disable={state.phase}
+        dataSetter={dataSetter}
+      />
+      <UIMsg status={state.status} />
+      <UIBox
+        task={task}
+        editorData={editorData}
+        taskDeleter={taskDeleter}
+        targetId={state.targetId}
+        phase={state.phase}
+      />
       {/* <button onClick={localToSever}>refresh</button> */}
     </>
   );

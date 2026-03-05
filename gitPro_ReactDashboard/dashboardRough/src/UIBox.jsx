@@ -1,5 +1,7 @@
 import React from "react";
-const UIBox = ({ task, taskDeleter, targetId, phase }) => {
+import Form from "./Form";
+const UIBox = ({ task, taskDeleter, targetId, phase, editorData }) => {
+
     return (
         <>
             <table>
@@ -13,13 +15,31 @@ const UIBox = ({ task, taskDeleter, targetId, phase }) => {
             </thead>
                 <tbody>
                     {task && task.map((e, i) => {
-                        return <tr key={e.id}>
-                            <td>{i+1}</td>
+                        return (
+                          <tr key={e.id}>
+                            <td>{i + 1}</td>
                             <td>{e.title}</td>
                             <td>{e.status}</td>
-                            <td><button>mark as complete</button></td>
-                            <td><button disabled={targetId==e.id} onClick={() => taskDeleter(i, e.id)}>{phase === "_loading" && targetId == e.id ? "...Deleting" : "Delete"}</button></td>
-                        </tr>
+                            <td>
+                              <button onClick={() => editorData(e.id, i)}>
+                                edit
+                              </button>
+                            </td>
+                            <td>
+                              <button
+                                disabled={
+                                  phase === "loading" &&
+                                  targetId == e.id
+                                }
+                                onClick={() => taskDeleter(i, e.id)}
+                              >
+                                {phase === "loading" && targetId == e.id
+                                  ? "...Deleting"
+                                  : "Delete"}
+                              </button>
+                            </td>
+                          </tr>
+                        );
                     })}
                 </tbody>
             </table>
