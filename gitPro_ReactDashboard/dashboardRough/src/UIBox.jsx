@@ -12,8 +12,7 @@ const UIBox = ({
 
 
   
-  return (
-    <>
+  return ( <>
       <table>
         <thead>
           <tr>
@@ -35,18 +34,18 @@ const UIBox = ({
                   <td>{e.status}</td>
                   <td>
                     <button
-                      disabled={e.status === "completed" && e.id==targetId || action==="editButton"}
-                      onClick={() => editorData(e.id, i)}
+                      disabled={e.status === "completed" || e.id == targetId && action === "editButton"}
+                      onClick={() => editorData(e.id)}
                     >
                       edit
                     </button>
                   </td>
                   <td>
                     <button
-                      disabled={phase==="loading" && e.id===targetId}
+                      disabled={phase === "loading" && e.id === targetId}
                       onClick={() => completer(e.id)}
                     >
-                     {phase==="loading" && targetId===e.id && action === "marker"?"...updating" :e.status==="completed"?"mark as pending":"mark as complete"}
+                      {phase === "loading" && targetId === e.id && action === "marker" ? "...updating" : e.status === "completed" ? "mark as pending" : "mark as complete"}
                     </button>
                   </td>
                   <td>
@@ -65,6 +64,7 @@ const UIBox = ({
         </tbody>
       </table>
     </>
+
   );
 };
 export default UIBox;

@@ -5,10 +5,14 @@ import Form from "./Form";
 import UIMsg from "./UIMsg";
 const App = () => {
   const [task, setTask] = useState(() => {
-    const localSavedTasks = localStorage.getItem("task");
-    const parsedList = JSON.parse(localSavedTasks);
-    return localSavedTasks ? [...parsedList] : [];
+   try{ const localSavedTasks = localStorage.getItem("task");
+      return localSavedTasks ? JSON.parse(localSavedTasks) : [];
+    }
+    catch {
+      return [];
+    }
   });
+ 
   const [data, setData] = useState("");
   const [state, setState] = useState({
     phase: "idle",
@@ -22,7 +26,14 @@ const App = () => {
      const stringList = JSON.stringify(localTask);
      localStorage.setItem("task", stringList);
   }, [task]);
- 
+  useEffect(() => {
+    async function fetcher() {
+      stateSetter({ phase: "loading", action: "fetching" });
+      await server(); 
+      stateSetter({ phase: "idle", action: null });
+    }
+    fetcher();
+  },[]);
    
   
   function server() {
@@ -135,7 +146,8 @@ const App = () => {
     }
     finally {
       await wait();
-      stateSetter({ phase: "idle", status: "marked", action: null, targetId: null,  });
+      stateSetter({ phase: "idle", status: "marked", action: null, targetId: null, });
+      setData("");
     }
 
  }
@@ -153,15 +165,20 @@ const App = () => {
         action={state.action}
       />
       <UIMsg status={state.status} />
-      <UIBox
-        action={state.action}
-        completer={completer}
-        task={task}
-        editorData={editorData}
-        taskDeleter={taskDeleter}
-        targetId={state.targetId}
-        phase={state.phase}
-      />
+      {state.phase === "loading" && state.action === "fetching" ? (
+        <p>Loading tasks...</p>
+      ) : (
+        <UIBox
+          action={state.action}
+          completer={completer}
+          task={task}
+          editorData={editorData}
+          taskDeleter={taskDeleter}
+          targetId={state.targetId}
+          phase={state.phase}
+        />
+      )}
+
       {/* <button onClick={localToSever}>refresh</button> */}
     </>
   );
