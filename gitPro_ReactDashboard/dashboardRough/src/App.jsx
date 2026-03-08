@@ -3,6 +3,7 @@ import Header from "./Header";
 import UIBox from "./UIBox";
 import Form from "./Form";
 import UIMsg from "./UIMsg";
+let rejectCount=1;
 const App = () => {
   const [task, setTask] = useState(() => {
    try{ const localSavedTasks = localStorage.getItem("task");
@@ -28,9 +29,12 @@ const App = () => {
   }, [task]);
   useEffect(() => {
     async function fetcher() {
-      stateSetter({ phase: "loading", action: "fetching" });
+      try{stateSetter({ phase: "loading", action: "fetching" });
       await server(); 
-      stateSetter({ phase: "idle", action: null });
+        stateSetter({ phase: "idle", action: null });
+      } catch {
+        stateSetter({ status: "fetchFailed", action:"fetching" });
+      }
     }
     fetcher();
   },[]);
@@ -38,8 +42,16 @@ const App = () => {
   
   function server() {
     return new Promise((res, rej) => {
+      console.log("here is rejectCount value : " + rejectCount);
       setTimeout(() => {
-        res();
+        if (rejectCount % 4 == 0) {
+          console.log('promise is rejected.')
+          rej();
+        } else {
+          res();
+        }
+        rejectCount++;
+        
       }, 800);
     })
   }
@@ -96,7 +108,7 @@ const App = () => {
    finally {
      setData("");
      
-    //  now the problem with localSyncher is that, it can not save to local the current but previous values, because of react state update betching, 
+   
    }
   }
   function dataSetter(e) {
@@ -117,14 +129,14 @@ const App = () => {
       stateSetter({ phase: "error", status: "deleteFailed", action: null });
     } finally {
       await wait();
-      stateSetter({ phase: "idle", status: null, action: null, targetId: null });
+      stateSetter({ phase: "idle", action: null, targetId: null });
       
     }
   };
   function editorData(id) {
     if (state.phase === "loading") return false;
     stateSetter({ phase: "idle", status: "editProgress", action:"editButton",targetId: id });
-    const taskToEdit = task.find(t => t.id == id);
+    const taskToEdit = task.find(t => t.id === id);
     setData(taskToEdit.title);
   }
   async function completer(id) {
@@ -179,7 +191,7 @@ const App = () => {
         />
       )}
 
-      {/* <button onClick={localToSever}>refresh</button> */}
+     
     </>
   );
 };

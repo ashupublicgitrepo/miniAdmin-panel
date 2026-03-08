@@ -11,7 +11,10 @@ const UIMsg = ({status}) => {
       editProgress: "please enter data to edit this task.",
       taskDelete: "task has been ...deleting.",
       marking: "...marking as completed, please wait.",
-      marked:"task marked as completed."
+      marked: "task marked as completed.",
+      uploadFailed: "internal sever error, please try again.",
+      deleteFailed: "internal sever error, please try again.",
+      fetchFailed: "cant get info, please reloade again to load from server."
     };
     function statusMapper() {
         return statusMap[status];

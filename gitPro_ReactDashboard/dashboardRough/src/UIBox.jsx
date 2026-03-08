@@ -13,7 +13,7 @@ const UIBox = ({
 
   
   return ( <>
-      <table>
+      <table border={"1px"}>
         <thead>
           <tr>
             <th>sr.no.</th>
