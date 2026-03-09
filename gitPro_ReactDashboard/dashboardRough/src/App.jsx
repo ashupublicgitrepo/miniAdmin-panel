@@ -13,7 +13,7 @@ const App = () => {
       return [];
     }
   });
- 
+  const [filteredTask, setFilteredTask] = useState([]);
   const [data, setData] = useState("");
   const [state, setState] = useState({
     phase: "idle",
@@ -25,7 +25,8 @@ const App = () => {
   useEffect(() => {
      const localTask = [...task];
      const stringList = JSON.stringify(localTask);
-     localStorage.setItem("task", stringList);
+    localStorage.setItem("task", stringList);
+    taskFilterer();
   }, [task]);
   useEffect(() => {
     async function fetcher() {
@@ -42,9 +43,8 @@ const App = () => {
   
   function server() {
     return new Promise((res, rej) => {
-      console.log("here is rejectCount value : " + rejectCount);
       setTimeout(() => {
-        if (rejectCount % 4 == 0) {
+        if (rejectCount % 6 == 0) {
           console.log('promise is rejected.')
           rej();
         } else {
@@ -153,17 +153,41 @@ const App = () => {
       } );
       await server();
       setTask(completedList);
+      stateSetter({status:"marked"})
     } catch {
-      
+      stateSetter({status:"markError"})
     }
     finally {
       await wait();
-      stateSetter({ phase: "idle", status: "marked", action: null, targetId: null, });
+      stateSetter({ phase: "idle", action: null, targetId: null, });
       setData("");
+     
     }
-
+// this function has an error, means, whenever we mark a task, it update the task list, but react schdule render, and only then task list will be updated, so, even i update task list here, use effect not call filterer, and hence pending can be seen in all option of filter. i dont know yet, what is the solution, because use effect works when task is added or deleted, but not when status changes. 
  }
- 
+  function taskFilterer(e = "all") {
+    if (state.phase === "loading") return false;
+    stateSetter({ phase: "loading", status: "filtering", action: e });
+    let type = e;
+    try {
+      if (type === "all") setFilteredTask(task);
+      else if (type === "completed") {
+        const completedTask = task.filter(t => t.status === "completed");
+        setFilteredTask(completedTask);
+      }
+      else if (type === "pending") {
+        const pendingTask = task.filter(t => t.status === "pending");
+        setFilteredTask(pendingTask);
+      }
+      stateSetter({ status: "filtered", action: "all" });
+    }
+    catch {
+      stateSetter({ phase: "idle", status: "filteringFailed", action: "all" });
+    } finally {
+      stateSetter({ phase: "idle" });
+    }
+    
+ }
  
   return (
     <>
@@ -180,14 +204,15 @@ const App = () => {
       {state.phase === "loading" && state.action === "fetching" ? (
         <p>Loading tasks...</p>
       ) : (
-        <UIBox
+          <UIBox
+            filteredTask={filteredTask}
           action={state.action}
           completer={completer}
-          task={task}
           editorData={editorData}
           taskDeleter={taskDeleter}
           targetId={state.targetId}
-          phase={state.phase}
+            phase={state.phase}
+            taskFilterer={taskFilterer}
         />
       )}
 
