@@ -13,7 +13,7 @@ const App = () => {
       return [];
     }
   });
-  const [filteredTask, setFilteredTask] = useState([]);
+   const [filter, setFilter] = useState("all");
   const [data, setData] = useState("");
   const [state, setState] = useState({
     phase: "idle",
@@ -26,7 +26,6 @@ const App = () => {
      const localTask = [...task];
      const stringList = JSON.stringify(localTask);
     localStorage.setItem("task", stringList);
-    taskFilterer();
   }, [task]);
   useEffect(() => {
     async function fetcher() {
@@ -161,32 +160,11 @@ const App = () => {
       await wait();
       stateSetter({ phase: "idle", action: null, targetId: null, });
       setData("");
-     
     }
-// this function has an error, means, whenever we mark a task, it update the task list, but react schdule render, and only then task list will be updated, so, even i update task list here, use effect not call filterer, and hence pending can be seen in all option of filter. i dont know yet, what is the solution, because use effect works when task is added or deleted, but not when status changes. 
  }
-  function taskFilterer(e = "all") {
-    if (state.phase === "loading") return false;
-    stateSetter({ phase: "loading", status: "filtering", action: e });
-    let type = e;
-    try {
-      if (type === "all") setFilteredTask(task);
-      else if (type === "completed") {
-        const completedTask = task.filter(t => t.status === "completed");
-        setFilteredTask(completedTask);
-      }
-      else if (type === "pending") {
-        const pendingTask = task.filter(t => t.status === "pending");
-        setFilteredTask(pendingTask);
-      }
-      stateSetter({ status: "filtered", action: "all" });
-    }
-    catch {
-      stateSetter({ phase: "idle", status: "filteringFailed", action: "all" });
-    } finally {
-      stateSetter({ phase: "idle" });
-    }
-    
+  function taskFilterer(e) {
+   
+    setFilter(e);
  }
  
   return (
@@ -205,13 +183,14 @@ const App = () => {
         <p>Loading tasks...</p>
       ) : (
           <UIBox
-            filteredTask={filteredTask}
+            task={task}
           action={state.action}
           completer={completer}
           editorData={editorData}
           taskDeleter={taskDeleter}
           targetId={state.targetId}
             phase={state.phase}
+            filter={filter}
             taskFilterer={taskFilterer}
         />
       )}
