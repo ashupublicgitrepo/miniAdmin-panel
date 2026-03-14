@@ -1,13 +1,23 @@
-import React from "react";
+import { useState } from "react";
+import React  from "react";
 import "./TableStyles.css";
 
-const UIPage = ({ data }) => {
+const UIPage = ({ data, input, phase }) => {
+  
+   
+ 
+    const userList = data.filter(u => {
+      if (input.length < 1) return u;
+      else return u.name.toUpperCase().includes(input.trim().toUpperCase());
+    });
+ 
+  
   
     
   return (
     <>
-     
-        <table className="my-table">
+      
+{phase === "idle" && (        <table className="my-table">
           <thead>
             <tr>
               <th>sr. no.</th>
@@ -18,7 +28,7 @@ const UIPage = ({ data }) => {
             </tr>
           </thead>
           <tbody>
-            {data.map((e, i) => {
+            {userList.map((e, i) => {
               return (
                 <tr key={e.id} >
                   <td>{i + 1}</td>
@@ -31,7 +41,7 @@ const UIPage = ({ data }) => {
             })}
           </tbody>
         </table>
-                 
+)}                 
         </>
   )
 
