@@ -1,15 +1,17 @@
 import React, { useEffect } from "react";
 import "./TableStyles.css";
-import { useOutletContext } from "react-router-dom";
+import { useLocation, useOutletContext } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
 const UIPage = () => {
   const { userStates, actions } = useOutletContext();
   const [currentPage, setCurrentPage] = useState(1);
-const searchedList = userStates.data.filter(u => {
-    if (!userStates.input) return true;
-    return u.name.toUpperCase().includes(userStates.input.toUpperCase())
+  const locations = useLocation();
+  const searchedUser = locations.search.split("=")[1];
+  const searchedList = userStates.data.filter(u => {
+    if (!userStates.input || !searchedUser) return true;
+    return u.name.toUpperCase().includes(searchedUser.toUpperCase())
   })
   const itemsPerPage = 5;
   const totalItems = searchedList.length;

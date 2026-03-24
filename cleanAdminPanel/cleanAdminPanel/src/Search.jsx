@@ -1,8 +1,8 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Search = ({input, inputSetter, phase, data}) => {
-  const location = useLocation();
+  
 
     return (
       <>
@@ -17,6 +17,7 @@ const Search = ({input, inputSetter, phase, data}) => {
                   id="search"
                   name="searchBox"
               />
+             
               
               </form>
             </div>

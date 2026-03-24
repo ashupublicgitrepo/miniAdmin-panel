@@ -5,9 +5,9 @@ import "./TableStyles.css";
 
 const UserDetailPage = () => {
   const { userStates } = useOutletContext();
-  const locationId = useParams();
-  // const navigate = useNavigate();
-  const targetId = Number( locationId.id);
+  const {id} = useParams();
+  const navigate = useNavigate();
+  const targetId = Number(id);
   const user = userFinder();
   const [comment, setComment] = useState({
     phase: null,
@@ -33,9 +33,18 @@ const UserDetailPage = () => {
     if (user) return user;
    
   }
-  // function navigator(page) {
-    // will be added tomorrow.
-  // }
+  function navigator(page) {
+    const userPresent = userStates.data.some(u => u.id === page);
+    if (userPresent) return navigate(`/userDetail/${page}`);
+    if (targetId < page) {
+      const nextPresent = userStates.data.find(u => u.id > page);
+      navigate(`/userDetail/${nextPresent.id}`);
+    } if (targetId > page) {
+      const previousPresent = userStates.data.findLast(u => u.id < page);
+      navigate(`/userDetail/${previousPresent.id}`);
+    }
+    
+  }
   function pageSetter(page) {
     setCurrentPage(pr => {
       if (page === "next") {
@@ -96,17 +105,15 @@ const UserDetailPage = () => {
 
   return (
     <>
-      <Link to="/">
-        <button>
-          <Link className="linkDecorate" to="/">back</Link>
-        </button>
+      <Link to="/" className="linkDecorate">
+        <button>back</button>
       </Link>
       {!user ? (
         <p>user not found</p>
       ) : (
         <>
           <div className="userDetail">
-            <div id="userDetailDiv">
+              <div id="userDetailDiv">
               <p className="user-info">{user.name}</p>
               <p className="user-info">Email : {user.email}</p>
               <p className="user-info">Phone : {user.phone}</p>
@@ -115,17 +122,13 @@ const UserDetailPage = () => {
               <p className="user-info">Address : {user.address.street}</p>
               <div style={{ textAlign: "center" }}>
                 {targetId > 1 && (
-                  <button>
-                    <Link className="linkDecorate" to={`/userDetail/${targetId - 1}`}>
-                      previous User
-                    </Link>
+                  <button onClick={()=>navigator(targetId - 1)}>
+                    previous user
                   </button>
                 )}
                 {targetId < userStates.data.length && (
-                  <button>
-                    <Link className="linkDecorate" to={`/userDetail/${targetId + 1}`}>
-                     Next User
-                    </Link>
+                  <button onClick={()=>navigator(targetId + 1)}>
+                    next user
                   </button>
                 )}
               </div>
