@@ -18,11 +18,8 @@ const appRoute = createBrowserRouter([
             {
                 path: "/userDetail/:id",
                 element: <UserDetailPage />
-            },
-            {
-                path: "/delete/:id",
-                element:<DeleteModel/>
             }
+            
            ]
     }
 ]

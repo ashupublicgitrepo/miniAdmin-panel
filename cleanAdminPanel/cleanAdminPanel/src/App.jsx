@@ -15,6 +15,7 @@ const App = () => {
     phase: "loading",
     status: "load",
     action: null,
+    deleteId:null,
   });
   const ref = useRef();
   const navigate = useNavigate();
@@ -60,9 +61,10 @@ const App = () => {
   }, []);
 
   function deleteConfirmDilogue(id) {
-    navigate(`/delete/${id}`);
+    updateState({ deleteId:id });
   }
   async function deleter(id) {
+    if (id === null) return updateState({ deleteId: null });
     try {
       const newData = data.filter((u) => u.id !== id);
       setData(newData);
@@ -71,29 +73,32 @@ const App = () => {
       updateState({ phase: "error", status: "deleteFailed" });
     } finally {
       await wait();
-      updateState({ status: null });
+      updateState({ status: null, deleteId:null });
     }
   }
 
   return (
     <>
-      <Header />
-      <UIMsg status={state.status} fetcher={fetcher} />
-      <Search
-        data={data}
-        input={input}
-        inputSetter={inputSetter}
-        phase={state.phase}
-      />
-      {state.phase === "loading" && <FakeUsers />}
+      {state.deleteId !== null && <DeleteModel deleteId={state.deleteId} deleter={deleter} />}
+      <div>
+        <Header />
+        <UIMsg status={state.status} fetcher={fetcher} />
+        <Search
+          data={data}
+          input={input}
+          inputSetter={inputSetter}
+          phase={state.phase}
+        />
+        {state.phase === "loading" && <FakeUsers />}
 
-      <UserPage
-        phase={state.phase}
-        data={data}
-        input={input}
-        deleteConfirmDilogue={deleteConfirmDilogue}
-        deleter={deleter}
-      />
+        <UserPage
+          phase={state.phase}
+          data={data}
+          input={input}
+          deleteConfirmDilogue={deleteConfirmDilogue}
+          deleter={deleter}
+        />
+      </div>
     </>
   );
 };
