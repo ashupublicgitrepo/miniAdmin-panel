@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 
-const UserPage = ({ phase, data, input, deleteConfirmDilogue, deleter }) => {
+const ChildContext = ({ phase, data, input, deleteConfirmDilogue, deleter }) => {
   return (
     <>
       <Outlet
@@ -14,4 +14,4 @@ const UserPage = ({ phase, data, input, deleteConfirmDilogue, deleter }) => {
   );
 };
 
-export default UserPage;
+export default ChildContext;

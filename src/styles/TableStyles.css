@@ -22,7 +22,7 @@
 }
 #userDetailDiv{
   border: 1px solid rgb(11, 94, 210);
-  width: fit-content;
+  width: 400px;
   display: flex, inline;
   flex-direction: column;
   padding: 5px;

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Header from "./Header.jsx";
 import UIMsg from "./UIMsg.jsx";
 import Search from "./Search.jsx";
-import UserPage from "./UserPage.jsx";
+import ChildContext from "./ChildContext.jsx";
 import { useNavigate } from "react-router-dom";
 import FakeUsers from "./FakeUsers.jsx";
 import DeleteModel from "./DeleteModel.jsx";
@@ -26,6 +26,7 @@ const App = () => {
       setInput(valueInInputTerminal);
     }
     if (!valueInInputTerminal) {
+      setInput("");
       return navigate("/");
     }
     if (ref.current) clearTimeout(ref.current);
@@ -91,7 +92,7 @@ const App = () => {
         />
         {state.phase === "loading" && <FakeUsers />}
 
-        <UserPage
+        <ChildContext
           phase={state.phase}
           data={data}
           input={input}

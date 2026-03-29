@@ -1,10 +1,8 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 const Search = ({input, inputSetter, phase, data}) => {
-  const location = useLocation();
-  const searchVal = new URLSearchParams(location.search);
-  const searchInput = searchVal.get("search");
+
+
 
     return (
       <>
@@ -15,7 +13,7 @@ const Search = ({input, inputSetter, phase, data}) => {
                 <input
                   type="text"
                   onChange={(e) => inputSetter(e)}
-                  value={searchInput?searchInput:input}
+                  value={input}
                   id="search"
                   name="searchBox"
               />
