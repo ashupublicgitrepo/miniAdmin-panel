@@ -26,6 +26,7 @@ const App = () => {
       setInput(valueInInputTerminal);
     }
     if (!valueInInputTerminal) {
+      clearTimeout(ref.current);
       setInput("");
       return navigate("/");
     }
@@ -38,6 +39,7 @@ const App = () => {
     return new Promise((res) => setTimeout(res, 1000));
   }
 
+  
   function updateState(state) {
     setState((pr) => ({ ...pr, ...state }));
   }

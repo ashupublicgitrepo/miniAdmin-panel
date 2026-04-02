@@ -1,15 +1,16 @@
 import React, { useEffect } from "react";
 import "../styles/TableStyles.css";
-import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
-import { Link } from "react-router-dom";
+import {Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useState } from "react";
 
+
 const UIPage = () => {
-  const { userStates, actions } = useOutletContext();
+  const { userStates } = useOutletContext();
   const [currentPage, setCurrentPage] = useState(1);
-  const locations = useLocation();
   const navigate = useNavigate();
-  const searchedUser = locations.search.split("=");
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchVal = urlParams.get("search");
+  const sortVal = urlParams.get("sort");
   const searchedList = filterer();
 
     
@@ -25,30 +26,38 @@ const UIPage = () => {
 
   function sorter(e) {
     const sortPref = e.target.value;
-    if (sortPref === "select") return false;
-    navigate(`/?sort=${sortPref}`);
+    if (sortPref === "select") navigate("/");
+    else {
+      navigate(`/?sort=${sortPref}${searchVal?`&search=${searchVal}`: ""}`);
+      
+    }
   }
   function filterer() {
-    if (searchedUser) {
-      if (searchedUser[0] === "?sort") {
-        switch (searchedUser[1]) {
-          case "name": return userStates.data.toSorted((user1, user2) =>
+    let list = [...userStates.data];
+
+    if (searchVal) {
+      return list.filter((u) =>
+        u.name.toUpperCase().includes(searchVal.toUpperCase()),
+      );
+    }
+      if (sortVal) {
+        switch (sortVal) {
+          case "name": return list.toSorted((user1, user2) =>
             user1.name.localeCompare(user2.name));
             break;
-          case "id": return userStates.data.toSorted((userId1, userId2) => userId1.id - userId2.id);
+          case "id":return list.toSorted((userId1, userId2) => userId1.id - userId2.id);
             break;
-          default : return userStates.data.toSorted(
+          default : return list.toSorted(
             (userId1, userId2) => userId1.id - userId2.id,
           );
         }
         
       }
-        if(searchedUser[0]==="?search") { return userStates.data.filter(u => u.name.toUpperCase().includes(searchedUser[1].toUpperCase())) 
-        }
+        
+      return list;
     }
-    return userStates.data;
     
-    }
+   
   
   function pageSetter(e) {
     setCurrentPage(pr => {
@@ -68,15 +77,16 @@ const UIPage = () => {
     if (visibleUsers.length < 1) return "no matching users found";
   }
 
+
   return (
     <>
       {userStates.data && (
         <div style={{ display: "inline", margin:"5px" }}>
           <label htmlFor="sort">sort</label>
-          <select id="sort" onChange={(e) => sorter(e)}>
-            <option>select</option>
-            <option>name</option>
-            <option>id</option>
+          <select id="sort" value={sortVal || "select"} onChange={(e) => sorter(e)}>
+            <option value = "select">select</option>
+            <option value = "name">name</option>
+            <option value = "id">id</option>
           </select>
         </div>
       )}
