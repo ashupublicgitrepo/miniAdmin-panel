@@ -4,7 +4,7 @@ import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useState } from "react";
 
 const UIPage = () => {
-  const { userStates } = useOutletContext();
+  const { userStates, actions } = useOutletContext();
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
