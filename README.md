@@ -5,13 +5,15 @@ A React-based dashboard application that allows users to browse user profiles, e
 This project demonstrates practical frontend architecture patterns used in real-world applications.
 
 ---
+
 ## Project Purpose
 
-This project was built to practice real-world frontend architecture patterns such as routing, pagination, async state handling, and optimistic UI updates commonly used in production React applications.
----
+## This project was built to practice real-world frontend architecture patterns such as routing, pagination, async state handling, and optimistic UI updates commonly used in production React applications.
+
 ## Live Demo,
-Coming soon
----
+
+## Coming soon
+
 ## Features
 
 • View user list  
@@ -50,11 +52,11 @@ Component-level state management
 ---
 
 ## Run Locally
+
 Clone repository
 https://github.com/ashupublicgitrepo/react-dashboard.git
 install dependencies,
 run project
-
 
 ## Future Improvements
 
@@ -63,13 +65,23 @@ Authentication
 Persistent comments storage
 
 ## Screenshots
+
 ### User List Page
+
 ![Homepage](screenshots/homepage.png)
+
 ### User List Sort
+
 ![User List](screenshots/sortName.png)
+
 ### User List Sort Search
+
 ![User List](screenshots/sortSearch.png)
+
 ### User Detail
+
 ![User Detail](screenshots/userDetail.png)
+
 ### Post Section
+
 ![Comment](screenshots/postedComment.png)
